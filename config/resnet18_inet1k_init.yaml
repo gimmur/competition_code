@@ -1,0 +1,11 @@
+model:
+  architecture: resnet18
+  pretrained: True
+
+dataset_query:
+  data_root_query: './my_query/'
+  batch_size_query: 1
+
+dataset_gallery:
+  data_root_gallery: './my_gallery/'
+  batch_size_gallery: 1
