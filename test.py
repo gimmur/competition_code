@@ -66,17 +66,16 @@ def top_k(dictionary:dict, k:int):
 #CODE FOR MEASURING THE PERFORMANCE ON TEST SET
 #we don't have the labels available but only the images. To calculate the accuracy of our model, we have to query a server, where the ground >
 
-#def submit(final, url="http://kamino.disi.unitn.it:3001/results/"):
-#    res = json.dumps(final)
-#    print(res)
-#    response = requests.post(url, res)
-#    try:
-#        result = json.loads(response.text)
-#        print(f"accuracy is {result['results']}")
-#    except json.JSONDecodeError:
-#        print(f"ERROR: {response.text}")
+def submit(final, url="http://kamino.disi.unitn.it:3001/results/"):
+    res = json.dumps(final)
+    print(res)
+    response = requests.post(url, res)
+    try:
+        result = json.loads(response.text)
+        print(f"accuracy is {result['results']}")
+    except json.JSONDecodeError:
+        print(f"ERROR: {response.text}")
 
-#results['groupname'] = "Diamond Tip"
 
 if __name__ == "__main__":
 
