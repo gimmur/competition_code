@@ -53,8 +53,8 @@ def top_k(dictionary:dict, k:int):
 
     for key, values in dictionary.items():
         finallist = []
-        for tuple in values:
-            finallist.append(tuple[1])
+        for value in values:
+            finallist.append(value[1])
         finallist = finallist[:k]
 
         finaldict[key] = finallist
