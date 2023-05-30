@@ -18,38 +18,57 @@ def test(net, q_loader, g_loader):
 
     with torch.no_grad():
 
-        my_res = dict()
+        my_dict_q = dict()
+        counter_q = 1
 
         for q_batch, q_filenames in q_loader:
             q_batch = q_batch.cuda()
             q_outputs = net(q_batch) #(q_batch_size, 512)
+            q_name_str = str(q_filenames[0])
+            my_dict_q[q_name_str] = q_outputs
+            if counter_q != len(q_loader):
+                print("added the number", counter_q, "element to the query dictionary")
+                counter_q += 1
+            else:
+                print("The query dictionary is fully completed. Start with the gallery dictionary.")
 
-            results = []
+        my_dict_g = dict()
+        counter_g = 1
 
-            for g_batch, g_filenames in g_loader:
-                g_batch = g_batch.cuda()
-                g_outputs = net(g_batch) #(g_batch_size, 512)
+        for g_batch, g_filenames in g_loader:
+            g_batch = g_batch.cuda()
+            g_outputs = net(g_batch) #(g_batch_size, 512)
+            g_name_str = str(g_filenames[0])
+            my_dict_g[g_name_str] = g_outputs
+            if counter_g != len(g_loader):
+                print("added the number", counter_g, "element to the gallery dictionary")
+                counter_g += 1
+            else:
+                print("The gallery dictionary is fully completed.")
 
-                # Calculate Euclidean distance between query and gallery features
-                distances = F.pairwise_distance(q_outputs.unsqueeze(1), g_outputs.unsqueeze(0)) #(q_batch_size, g_batch_size)
+        intermediate_dict = dict()
 
-                # Create a list of tuples containing distances and filenames
-                for i in range(distances.size(0)):
-                    results.append((distances[i].item(), g_filenames[i])) #torch.Tensor.item only works for tensors with one element
+        last_counter = 1
+        val = []
+        for key_q, value_q in my_dict_q.items():
+            for key_g, value_g in my_dict_g.items():
+                val.append((F.pairwise_distance(value_q, value_g), key_g)) #maybe unsqueeze is not needed (same dim)
 
-            # Sort the results based on distances
-            results.sort(key=lambda x: x[0])
+            val.sort(key=lambda x: x[0]) #sorting values based on distances
 
-            # Store the sorted results in the dictionary
-            query_filename = q_filenames[0]
-            my_res[query_filename] = results
+            intermediate_dict[key_q] = val
+            if last_counter != len(q_loader):
+                print("added the number", last_counter, "element to the intermediate dictionary")
+                last_counter += 1
+            else:
+                print("the intermediate dictionary is fully completed")
 
-    return my_res
+    return intermediate_dict
 
 
 def top_k(dictionary:dict, k:int):
 
-    finaldict = dict()
+        finaldict = dict()
 
     for key, values in dictionary.items():
         finallist = []
@@ -76,7 +95,6 @@ def submit(final, url="http://kamino.disi.unitn.it:3001/results/"):
     except json.JSONDecodeError:
         print(f"ERROR: {response.text}")
 
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("Testing Parser")
@@ -95,8 +113,8 @@ if __name__ == "__main__":
 
     model = ResNet(config['model'])
     model.cuda()
-    
+
     results = test(model, query_dataloader, gallery_dataloader)
     #print(results)
-    print(top_k(results, 4))
-    #submit(top_k(results, 4))
+    print(top_k(results, 10))
+    #submit(top_k(results, 10))
