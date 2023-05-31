@@ -85,7 +85,7 @@ def top_k(dictionary:dict, k:int):
 #CODE FOR MEASURING THE PERFORMANCE ON TEST SET
 #we don't have the labels available but only the images. To calculate the accuracy of our model, we have to query a server, where the ground >
 
-def submit(final, url="http://kamino.disi.unitn.it:3001/results/"):
+def submit(final, url="https://competition-production.up.railway.app/results/"):
     res = json.dumps(final)
     print(res)
     response = requests.post(url, res)
@@ -94,6 +94,7 @@ def submit(final, url="http://kamino.disi.unitn.it:3001/results/"):
         print(f"accuracy is {result['results']}")
     except json.JSONDecodeError:
         print(f"ERROR: {response.text}")
+        return None
 
 if __name__ == "__main__":
 
@@ -115,6 +116,7 @@ if __name__ == "__main__":
     model.cuda()
 
     results = test(model, query_dataloader, gallery_dataloader)
-    #print(results)
-    print(top_k(results, 10))
-    #submit(top_k(results, 10))
+    mydata = dict()
+    mydata['groupname'] = "The Diamond Tip"
+    mydata['images'] = top_k(results, 10)
+    submit(mydata)
