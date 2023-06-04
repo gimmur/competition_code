@@ -14,10 +14,14 @@ from network import ResNet
 
 def test(net, q_loader, g_loader):
 
-    #net.eval() type 'ResNet' does not have expected attribute 'eval', Pytorch says
+    #net.eval() "type 'ResNet' does not have expected attribute 'eval', Pytorch error says"
 
     with torch.no_grad():
-
+        """
+        Building of the dictionary
+        containing each query image 
+        mapped to its features.
+        """
         my_dict_q = dict()
         counter_q = 1
 
@@ -32,6 +36,11 @@ def test(net, q_loader, g_loader):
             else:
                 print("The query dictionary is fully completed. Start with the gallery dictionary.")
 
+        """
+        Building of the dictionary
+        containing each gallery image 
+        mapped to its features.
+        """
         my_dict_g = dict()
         counter_g = 1
 
@@ -45,16 +54,22 @@ def test(net, q_loader, g_loader):
                 counter_g += 1
             else:
                 print("The gallery dictionary is fully completed.")
-
+                
+        """
+        Building of the dictionary containing each query image 
+        mapped to an array of tuples. First element of each tuple:
+        name of the gallery image, second element of each tuple:
+        distance from the query.
+        """
         intermediate_dict = dict()
 
         last_counter = 1
         val = []
         for key_q, value_q in my_dict_q.items():
             for key_g, value_g in my_dict_g.items():
-                val.append((F.pairwise_distance(value_q, value_g), key_g)) #maybe unsqueeze is not needed (same dim)
+                val.append((F.pairwise_distance(value_q, value_g), key_g)) #(same dim)
 
-            val.sort(key=lambda x: x[0]) #sorting values based on distances
+            val.sort(key=lambda x: x[0]) #sorting values in the array based on distances
 
             intermediate_dict[key_q] = val
             if last_counter != len(q_loader):
@@ -67,7 +82,12 @@ def test(net, q_loader, g_loader):
 
 
 def top_k(dictionary:dict, k:int):
-
+    """
+    Takes the intermediate dictionary as 
+    input and returns a final dictionary 
+    mapping each query images to the gallery
+    images that are most similar to it.
+    """
         finaldict = dict()
 
     for key, values in dictionary.items():
@@ -82,10 +102,12 @@ def top_k(dictionary:dict, k:int):
 
     return finaldict
 
-#CODE FOR MEASURING THE PERFORMANCE ON TEST SET
-#we don't have the labels available but only the images. To calculate the accuracy of our model, we have to query a server, where the ground >
 
 def submit(final, url="https://competition-production.up.railway.app/results/"):
+    """
+    We don't have the labels available but only the images. 
+    To calculate the accuracy of our model we have to query a server.
+    """    
     res = json.dumps(final)
     print(res)
     response = requests.post(url, res)
