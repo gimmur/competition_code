@@ -6,7 +6,7 @@ import numpy as np
 
 class Query_Images(torch.utils.data.Dataset):
 
-    """create a Dataset class which returns the same image,
+    """Create a Dataset class which returns the same image,
     len of instances and returns the same image in getitem.
     NO AUGMENTATION BECAUSE THIS GOES FOR TESTING"""
 
@@ -30,11 +30,10 @@ class Query_Images(torch.utils.data.Dataset):
 
 def get_query_dataset(config):
 
-    """define transformations and instantiate
-    the dataset class  with transformations."""
+    """Define transformations and instantiate
+    the dataset class with transformations.
+    Also instantiate and return the dataloader."""
 
-    # Define the transformations at test time
-    #transform_rgb = transforms.Lambda(lambda image: image.convert('RGB')) SHOULD NOT BE NECESSARY, RIGHT?
     transform = transforms.Compose([
         #transform_rgb,
         transforms.ToTensor(),
@@ -75,11 +74,10 @@ class Gallery_Images(torch.utils.data.Dataset): #see lab02 for transformations
 
 def get_gallery_dataset(config):
 
-    """define transformations and instantiate
-    the dataset class  with transformations."""
+    """Define transformations and instantiate
+    the dataset class with transformations.
+    Also instantiate and return the dataloader."""
 
-    # Define the transformations at test time
-    #transform_rgb = transforms.Lambda(lambda image: image.convert('RGB')) SHOULD NOT BE NECESSARY, RIGHT?
     transform = transforms.Compose([
         #transform_rgb,
         transforms.ToTensor(),
