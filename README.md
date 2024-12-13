@@ -1,6 +1,6 @@
 Diamond Tip (Giovanni Astante, Letizia Fabbri, Davide Vandelli)
 
-This is the code for the Introduction To Machine Learning competition. To see Vandelli's code, check FluveV repository on Github. Alternatively, check Fabbri's code searching llfabbri repository on GitHub.
+This is the code for the Introduction To Machine Learning course. To see Vandelli's code, check FluveV repository on Github. Alternatively, check Fabbri's code searching llfabbri repository on GitHub.
 
 Note: the uploaded scripts are the ones used for the first model appearing in the report, at the paragraph "Resnet18 and Euclidean Distance". Trying the other 
 models consisted in modifying accordingly single lines of the code used for this model. Whenever a different pretrained ResNet architecture is used, changes
